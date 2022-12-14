@@ -2,16 +2,17 @@ from shape import Shape
 from ray import Ray
 from constants import RAY_MIN_DISTANCE
 from intersection import Intersection
-from color import Color
+from material import Material
+from vector_helpers import normalize
 
 import numpy as np
 import math
 
 class Sphere(Shape):
-    def __init__(self, center: np.ndarray, radius: float, color=Color.unnormalized_gray(255)):
+    def __init__(self, center: np.ndarray, radius: float, material: Material):
         self.center = center
         self.radius = radius
-        self.color = color
+        super().__init__(material)
 
     def intersection(self, ray: Ray):
         local_ray = self.translated_ray(ray)
@@ -22,7 +23,7 @@ class Sphere(Shape):
         t = self.best_solution(ts)
         if t is None:
             return None
-        return Intersection(ray, self, t, self.color)
+        return Intersection(ray, self, t)
 
     def quadric_equation_solution(self, a, b, c):
         discriminant = b ** 2 - 4 * a * c
@@ -58,3 +59,6 @@ class Sphere(Shape):
         translated_ray = Ray.copy(ray)
         translated_ray.origin = translated_ray.origin - self.center
         return translated_ray
+
+    def normal_at_point(self, point: np.ndarray):
+        return normalize(point - self.center)

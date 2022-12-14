@@ -16,7 +16,7 @@ class Image:
         if (y < 0 or y >= self.height):
             raise ValueError("Invalid y")
 
-        self.data[y, x] = color.to_nparray()
+        self.data[y, x] = color.data
 
     def apply_gamma_correction(self, exposure = 1.0, gamma = 2.2):
         return np.clip(np.power(self.data * exposure, gamma), 0.0, 1.0)

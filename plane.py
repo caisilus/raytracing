@@ -1,16 +1,17 @@
 from shape import Shape
 from intersection import Intersection
 from ray import Ray
-from color import Color
+from material import Material
 import numpy as np
 from constants import EPS
 from constants import RAY_MIN_DISTANCE
+from vector_helpers import normalize
 
 class Plane(Shape):
-    def __init__(self, position: np.ndarray, normal: np.ndarray, color=Color.unnormalized_gray(255)):
+    def __init__(self, position: np.ndarray, normal: np.ndarray, material: Material):
         self.position = position
         self.normal = normal
-        self.color = color
+        super().__init__(material)
 
     def intersection(self, ray: Ray):
         ray_dir_dot_normal = np.dot(ray.direction, self.normal)
@@ -21,4 +22,7 @@ class Plane(Shape):
         if (t < RAY_MIN_DISTANCE):
             return None
      
-        return Intersection(ray, self, t, self.color)
+        return Intersection(ray, self, t)
+
+    def normal_at_point(self, point: np.ndarray):
+        return normalize(self.normal)

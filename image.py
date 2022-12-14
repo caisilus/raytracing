@@ -18,12 +18,12 @@ class Image:
 
         self.data[y, x] = color.data
 
-    def apply_gamma_correction(self, exposure = 1.0, gamma = 2.2):
+    def apply_gamma_correction(self, exposure, gamma):
         return np.clip(np.power(self.data * exposure, gamma), 0.0, 1.0)
 
-    def save(self, filename, apply_gamma_correction=False):
+    def save(self, filename, apply_gamma_correction=False, exposure = 1.0, gamma = 2.2):
         if apply_gamma_correction:
-            data = self.apply_gamma_correction()
+            data = self.apply_gamma_correction(exposure, gamma)
         else:
             data = self.data
         img = PILImage.fromarray(np.uint8(data * 255))

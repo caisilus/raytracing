@@ -35,11 +35,20 @@ class Color():
 
         return Color.from_array(self.data * other.data)
         
-    def red():
-        return Color(1.0, 0.0, 0.0)
+    def red(r=1.0):
+        return Color(r, 0.0, 0.0)
 
-    def green():
-        return Color(0.0, 1.0, 0.0)
+    def green(g=1.0):
+        return Color(0.0, g, 0.0)
 
-    def blue():
-        return Color(0.0, 0.0, 1.0)
+    def blue(b=1.0):
+        return Color(0.0, 0.0, b)
+
+    def yellow(y=1.0):
+        return Color(y, y, 0.0)
+
+    def purple(p=1.0):
+        return Color(p, 0.0, p)
+
+    def turquoise(t=1.0):
+        return Color(0.0, t, t)

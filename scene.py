@@ -26,7 +26,7 @@ class Scene:
         if nearest_intersection is None:
             return None
         illumination = self.calculate_illumination(ray, nearest_intersection)
-        color = Color.from_array(np.clip(illumination, 0, 1))
+        color = Color.from_array(np.clip(illumination, 0.0, 1.0))
         return color
 
     def nearest_intersection(self, ray: Ray):
@@ -46,11 +46,10 @@ class Scene:
     def calculate_illumination(self, ray: Ray, intersection: Intersection):
         direction_to_light = normalize(self.light_source.position - intersection.position())
         direction_to_camera = normalize(-ray.direction)
-        # normal = intersection.shape.normal_at_point(intersection.position)
+        
         normal = intersection.normal()
-
-        # material = intersection.shape.material
         material = intersection.material()
+        
         illumination = np.zeros((3))
         # ambient
         ambient = (material.ambient_color * self.light_source.ambient_color).data

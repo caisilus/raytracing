@@ -1,4 +1,5 @@
 from ray import Ray
+from vector_helpers import normalize
 
 import numpy as np
 import math
@@ -8,12 +9,10 @@ class Camera:
                  fov: float, aspect_ratio: float):
         self.position = position
         
-        self.forward = (target - position)
-        self.forward = self.forward / np.linalg.norm(self.forward)
+        self.forward = normalize(target - position)
         
-        self.right = np.cross(self.forward, up_guide)
-        self.right = self.right / np.linalg.norm(self.right)
-
+        self.right = normalize(np.cross(self.forward, up_guide))
+        
         self.up = np.cross(self.right, self.forward)
         self.h = math.tan(fov)
         self.w = self.h * aspect_ratio

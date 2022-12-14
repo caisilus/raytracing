@@ -1,12 +1,13 @@
 from ray import Ray
 
 class Intersection:
-    def __init__(self, ray: Ray, shape = None, t: float = None):
+    def __init__(self, ray: Ray, shape = None, t: float = None, color = None):
         self.ray = ray
         self.t = t
         if t is None:
             self.t = ray.max_t
         self.intersected_shape = None
+        self.color = color
 
     def intersected(self):
         return self.intersected_shape != None

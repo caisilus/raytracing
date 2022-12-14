@@ -13,4 +13,4 @@ def ray_trace(image: Image, scene: Scene, camera: Camera):
             ray = camera.make_ray(camera_x, camera_y)
             intersection = scene.cast_ray(ray)
             if intersection is not None:
-                image.put_pixel(x, y)
+                image.put_pixel(x, y, intersection.color)

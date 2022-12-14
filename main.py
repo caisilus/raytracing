@@ -14,14 +14,17 @@ from raytrace import ray_trace
 
 scene = Scene()
 
+walls_shineness = 0.0
 
-floor_material = Material(Color.gray(0.1), Color.gray(0.5), Color.gray(0.0), 100.0)
+walls_specular_color = Color.gray(0.0)
+
+floor_material = Material(Color.gray(0.1), Color.gray(0.5), walls_specular_color, walls_shineness)
 floor = Plane(np.array([0.0, 0.0, 0.0]), np.array([0.0, 1.0, 0.0]), floor_material)
 
-right_wall_material = Material(Color.blue(0.1), Color.blue(0.7), Color.gray(0.0), 100.0)
+right_wall_material = Material(Color.blue(0.1), Color.blue(0.7), walls_specular_color, walls_shineness)
 right_wall = Plane(np.array([5.0, 0.0, 0.0]), np.array([-1.0, 0.0, 0.0]), right_wall_material)
 
-left_wall_material = Material(Color.red(0.1), Color.red(0.7), Color.gray(0.0), 100.0)
+left_wall_material = Material(Color.red(0.1), Color.red(0.7), walls_specular_color, walls_shineness)
 left_wall = Plane(np.array([-5.0, 0.0, 0.0]), np.array([1.0, 0.0, 0.0]), left_wall_material)
 
 back_wall = Plane(np.array([0.0, 0.0, 10.0]), np.array([0.0, 0.0, -1.0]), floor_material)
@@ -34,9 +37,12 @@ scene.add_shape(back_wall)
 scene.add_shape(roof)
 
 sphere_material = Material(Color.yellow(0.1), Color.yellow(0.7), Color.gray(1.0))
-sphere = Sphere(np.array([0, 1.0, 5.0]), 1.0, sphere_material)
+sphere = Sphere(np.array([3.0, 1.0, 5.0]), 1.0, sphere_material)
+reflecting_material = Material(Color.purple(0.1), Color.purple(0.7), Color.gray(1.0), 100.0, 0.5)
+reflecting_sphere = Sphere(np.array([-2.0, 1.0, 5.0]), 2.0, reflecting_material)
 
 scene.add_shape(sphere)
+scene.add_shape(reflecting_sphere)
 
 light_material = Material(Color(1, 1, 1), Color(1, 1, 1), Color(1, 1, 1), 100.0)
 light = PointLight(np.array([0.0, 9.0, 6.0]), light_material)
@@ -49,4 +55,6 @@ camera = Camera(np.array([0.0, 5.0, -10.0]), np.array([0.0, 5.0, 2.0]),
 
 ray_trace(image, scene, camera)
 image.save("output.jpg")
-image.save("gamma_corrected.jpg", True)
+print("saved output")
+image.save("gamma_corrected.jpg", True, 1.4, 2.2)
+print("saved gamma_corrected")

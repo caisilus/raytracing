@@ -12,7 +12,8 @@ import numpy as np
 class Scene:
     shapes: List[Shape]
     
-    def __init__(self):
+    def __init__(self, max_depth = 2):
+        self.max_depth = max_depth
         self.shapes = []
 
     def add_shape(self, shape: Shape):
@@ -21,11 +22,15 @@ class Scene:
     def add_light_source(self, light_source: PointLight):
         self.light_source = light_source
 
-    def cast_ray(self, ray: Ray) -> Color:
+    def cast_ray(self, ray: Ray, shadow_brightness=0.1, depth=0) -> Color:
         nearest_intersection = self.nearest_intersection(ray)
         if nearest_intersection is None:
             return None
-        illumination = self.calculate_illumination(ray, nearest_intersection)
+
+        illumination = np.array([shadow_brightness, shadow_brightness, shadow_brightness])
+        if self.check_light(nearest_intersection):
+            illumination = self.calculate_illumination(ray, nearest_intersection)
+        
         color = Color.from_array(np.clip(illumination, 0.0, 1.0))
         return color
 
@@ -38,10 +43,29 @@ class Scene:
             if shape_intersection < intersection:
                 intersection = shape_intersection
         
-        if (intersection.t == ray.max_t) or (intersection.intersected_shape is None):
+        if self.no_intersection(intersection, ray):
             return None
 
         return intersection
+
+    def no_intersection(self, intersection, ray):
+        return (intersection.t == ray.max_t) or (intersection.intersected_shape is None)
+
+    def check_light(self, intersection):
+        ray = self.ray_to_light(intersection)
+        distance_to_light = self.distance_to_light(ray.origin)
+        nearest_intersection = self.nearest_intersection(ray)
+        return self.no_intersection(nearest_intersection, ray) or (nearest_intersection.t > distance_to_light) 
+
+    def distance_to_light(self, position: np.ndarray):
+        direction_to_light = self.light_source.position - position
+        return np.linalg.norm(direction_to_light)
+
+    def ray_to_light(self, intersection):
+        pos = intersection.position()
+        origin = pos + 1e-5 * intersection.normal()
+        direction = self.light_source.position - origin
+        return Ray(origin, direction)
 
     def calculate_illumination(self, ray: Ray, intersection: Intersection):
         direction_to_light = normalize(self.light_source.position - intersection.position())
@@ -50,7 +74,6 @@ class Scene:
         normal = intersection.normal()
         material = intersection.material()
         
-        illumination = np.zeros((3))
         # ambient
         ambient = (material.ambient_color * self.light_source.ambient_color).data
         # diffuse
@@ -63,6 +86,12 @@ class Scene:
 
         illumination = ambient + diffuse + specular
         return illumination
+
+    def reflected(ray: Ray, intersection: Intersection):
+        reflected_ray_origin = intersection.position()
+        normal = intersection.normal()
+        reflected_ray_direction = ray.direction - 2 * np.dot(ray.direction, normal) * normal
+        return Ray(reflected_ray_origin, reflected_ray_direction)
 
     def does_intesect(self, intersection: Intersection):
         for shape in self.shapes:

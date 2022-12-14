@@ -4,6 +4,7 @@ from shape import Shape
 from point_light import PointLight
 from vector_helpers import normalize
 from color import Color
+from constants import EPS
 
 from typing import List
 
@@ -12,8 +13,9 @@ import numpy as np
 class Scene:
     shapes: List[Shape]
     
-    def __init__(self, max_depth = 2):
+    def __init__(self, max_depth = 1, shadow_brightness = 0.0):
         self.max_depth = max_depth
+        self.shadow_brightness = shadow_brightness
         self.shapes = []
 
     def add_shape(self, shape: Shape):
@@ -22,17 +24,40 @@ class Scene:
     def add_light_source(self, light_source: PointLight):
         self.light_source = light_source
 
-    def cast_ray(self, ray: Ray, shadow_brightness=0.1, depth=0) -> Color:
-        nearest_intersection = self.nearest_intersection(ray)
-        if nearest_intersection is None:
-            return None
+    def cast_ray(self, ray: Ray) -> Color:
+        # nearest_intersection = self.nearest_intersection(ray)
+        # if nearest_intersection is None:
+        #     return None
 
-        illumination = np.array([shadow_brightness, shadow_brightness, shadow_brightness])
-        if self.check_light(nearest_intersection):
-            illumination = self.calculate_illumination(ray, nearest_intersection)
-        
+        # illumination = np.array([self.shadow_brightness, self.shadow_brightness, self.shadow_brightness])
+        # if self.check_light(nearest_intersection):
+        #     illumination = self.calculate_illumination(ray, nearest_intersection)
+
+        illumination = self.sum_illumination(ray)
+
         color = Color.from_array(np.clip(illumination, 0.0, 1.0))
         return color
+
+    def sum_illumination(self, ray: Ray, depth=0):
+        nearest_intersection = self.nearest_intersection(ray)
+        if nearest_intersection is None:
+            return np.zeros((3))
+
+        reflection = 0.0
+
+        if depth != 0:
+            reflection = nearest_intersection.material().reflection
+
+        illumination = np.array([self.shadow_brightness, self.shadow_brightness, self.shadow_brightness])
+        if self.check_light(nearest_intersection):
+            illumination = self.calculate_illumination(ray, nearest_intersection)
+
+        if (depth == self.max_depth) or (reflection < EPS):
+            return illumination
+
+
+        reflected_ray = self.reflected(ray, nearest_intersection)
+        return illumination + reflection * self.sum_illumination(reflected_ray, depth + 1)
 
     def nearest_intersection(self, ray: Ray):
         intersection = Intersection(ray)
@@ -87,7 +112,7 @@ class Scene:
         illumination = ambient + diffuse + specular
         return illumination
 
-    def reflected(ray: Ray, intersection: Intersection):
+    def reflected(self, ray: Ray, intersection: Intersection):
         reflected_ray_origin = intersection.position()
         normal = intersection.normal()
         reflected_ray_direction = ray.direction - 2 * np.dot(ray.direction, normal) * normal

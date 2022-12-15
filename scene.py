@@ -13,9 +13,8 @@ import numpy as np
 class Scene:
     shapes: List[Shape]
     
-    def __init__(self, max_depth = 1, shadow_brightness = 0.0):
+    def __init__(self, max_depth = 1):
         self.max_depth = max_depth
-        self.shadow_brightness = shadow_brightness
         self.shapes = []
 
     def add_shape(self, shape: Shape):
@@ -54,29 +53,25 @@ class Scene:
             if shape_intersection < intersection:
                 intersection = shape_intersection
         
-        if self.no_intersection(intersection, ray):
+        if self.no_intersection(intersection):
             return None
 
         return intersection
 
-    def no_intersection(self, intersection, ray):
-        return (intersection.t == ray.max_t) or (intersection.intersected_shape is None)
+    def no_intersection(self, intersection):
+        return intersection == None or not intersection.intersected()
 
     def check_light(self, intersection):
         ray = self.ray_to_light(intersection)
-        distance_to_light = self.distance_to_light(ray.origin)
         nearest_intersection = self.nearest_intersection(ray)
-        return self.no_intersection(nearest_intersection, ray) or (nearest_intersection.t > distance_to_light) 
-
-    def distance_to_light(self, position: np.ndarray):
-        direction_to_light = self.light_source.position - position
-        return np.linalg.norm(direction_to_light)
+        return self.no_intersection(nearest_intersection) 
 
     def ray_to_light(self, intersection):
         pos = intersection.position()
         origin = pos + 1e-5 * intersection.normal()
         direction = self.light_source.position - origin
-        return Ray(origin, direction)
+        distance_to_light = np.linalg.norm(direction)
+        return Ray(origin, direction, distance_to_light)
 
     def calculate_illumination(self, ray: Ray, intersection: Intersection):
         direction_to_light = normalize(self.light_source.position - intersection.position())

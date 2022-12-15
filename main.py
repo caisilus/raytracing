@@ -56,7 +56,8 @@ def build_scene():
 
 def main():
     scene = build_scene()
-    image = Image(1920, 1080)
+    #image = Image(1920, 1080)
+    image = Image(1280, 720)
     camera = Camera(np.array([0.0, 5.0, -10.0]), np.array([0.0, 5.0, 2.0]), 
                     np.array([0.0, 1.0, 0.0]), 25 * math.pi / 180.0, image.width / image.height)
 

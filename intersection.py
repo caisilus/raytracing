@@ -15,7 +15,7 @@ class Intersection:
         return self.intersected_shape.normal_at_point(self.position())
 
     def intersected(self):
-        return self.intersected_shape != None
+        return (self.intersected_shape != None) and (self.t < self.ray.max_t)
 
     def position(self):
         return self.ray.ray_point(self.t)

@@ -42,19 +42,15 @@ class Scene:
         nearest_intersection = self.nearest_intersection(ray)
         if nearest_intersection is None:
             return np.zeros((3))
-
-        reflection = 0.0
-
-        if depth != 0:
-            reflection = nearest_intersection.material().reflection
-
+    
         illumination = np.array([self.shadow_brightness, self.shadow_brightness, self.shadow_brightness])
         if self.check_light(nearest_intersection):
             illumination = self.calculate_illumination(ray, nearest_intersection)
 
+        reflection = nearest_intersection.material().reflection
+
         if (depth == self.max_depth) or (reflection < EPS):
             return illumination
-
 
         reflected_ray = self.reflected(ray, nearest_intersection)
         return illumination + reflection * self.sum_illumination(reflected_ray, depth + 1)
@@ -113,8 +109,8 @@ class Scene:
         return illumination
 
     def reflected(self, ray: Ray, intersection: Intersection):
-        reflected_ray_origin = intersection.position()
         normal = intersection.normal()
+        reflected_ray_origin = intersection.position() + 1e-5 * normal
         reflected_ray_direction = ray.direction - 2 * np.dot(ray.direction, normal) * normal
         return Ray(reflected_ray_origin, reflected_ray_direction)
 

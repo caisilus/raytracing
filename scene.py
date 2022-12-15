@@ -25,14 +25,6 @@ class Scene:
         self.light_source = light_source
 
     def cast_ray(self, ray: Ray) -> Color:
-        # nearest_intersection = self.nearest_intersection(ray)
-        # if nearest_intersection is None:
-        #     return None
-
-        # illumination = np.array([self.shadow_brightness, self.shadow_brightness, self.shadow_brightness])
-        # if self.check_light(nearest_intersection):
-        #     illumination = self.calculate_illumination(ray, nearest_intersection)
-
         illumination = self.sum_illumination(ray)
 
         color = Color.from_array(np.clip(illumination, 0.0, 1.0))

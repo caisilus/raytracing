@@ -38,7 +38,7 @@ scene.add_shape(roof)
 
 sphere_material = Material(Color.yellow(0.1), Color.yellow(0.7), Color.gray(1.0))
 sphere = Sphere(np.array([3.0, 1.0, 5.0]), 1.0, sphere_material)
-reflecting_material = Material(Color.purple(0.0), Color.purple(0.0), Color.gray(0.0), 0.0, 1.0)
+reflecting_material = Material(Color.purple(0.1), Color.purple(0.7), Color.gray(0.0), 0.0, 0.6)
 reflecting_sphere = Sphere(np.array([-2.0, 2.0, 5.0]), 2.0, reflecting_material)
 
 scene.add_shape(sphere)

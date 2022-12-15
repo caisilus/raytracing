@@ -43,9 +43,7 @@ class Scene:
         if nearest_intersection is None:
             return np.zeros((3))
     
-        illumination = np.array([self.shadow_brightness, self.shadow_brightness, self.shadow_brightness])
-        if self.check_light(nearest_intersection):
-            illumination = self.calculate_illumination(ray, nearest_intersection)
+        illumination = self.calculate_illumination(ray, nearest_intersection)
 
         reflection = nearest_intersection.material().reflection
 
@@ -97,6 +95,10 @@ class Scene:
         
         # ambient
         ambient = (material.ambient_color * self.light_source.ambient_color).data
+        
+        if not self.check_light(intersection):
+            return ambient
+        
         # diffuse
         diffuse = (material.diffuse_color * self.light_source.diffuse_color).data 
         diffuse *= np.dot(direction_to_light, normal)

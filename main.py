@@ -30,13 +30,17 @@ def build_scene():
     left_wall_material = Material(Color.red(0.1), Color.red(0.7), walls_specular_color, walls_shineness)
     left_wall = Plane(np.array([-5.0, 0.0, 0.0]), np.array([1.0, 0.0, 0.0]), left_wall_material)
 
-    back_wall = Plane(np.array([0.0, 0.0, 10.0]), np.array([0.0, 0.0, -1.0]), floor_material)
+    back_wall_material = Material(Color.gray(0.0), Color.gray(0.0), walls_specular_color, walls_shineness, 1.0)
+    back_wall = Plane(np.array([0.0, 0.0, 10.0]), np.array([0.0, 0.0, -1.0]), back_wall_material)
     roof = Plane(np.array([0.0, 10.0, 0.0]), np.array([0.0, -1.0, 0.0]), floor_material)
+
+    front_wall = Plane(np.array([0.0, 0.0, -11.0]), np.array([0.0, 0.0, 1.0]), floor_material)
 
     scene.add_shape(floor)
     scene.add_shape(left_wall)
     scene.add_shape(right_wall)
     scene.add_shape(back_wall)
+    scene.add_shape(front_wall)
     scene.add_shape(roof)
 
     box_material = Material(Color.turquoise(0.1), Color.turquoise(0.9), Color.gray(0.0), 0.0, 0.0)

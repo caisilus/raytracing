@@ -2,6 +2,7 @@ from camera import Camera
 from scene import Scene
 from sphere import Sphere
 from plane import Plane
+from box import Box
 from image import Image
 from color import Color
 from material import Material
@@ -38,11 +39,14 @@ def build_scene():
     scene.add_shape(back_wall)
     scene.add_shape(roof)
 
+    box_material = Material(Color.turquoise(0.1), Color.turquoise(0.9), Color.gray(0.0), 0.0, 0.0)
+    box = Box(np.array([3.0, 2.0, 6.0]), 2.0, 4.0, 2.0, box_material)
     sphere_material = Material(Color.yellow(0.1), Color.yellow(0.7), Color.gray(1.0))
-    sphere = Sphere(np.array([3.0, 1.0, 5.0]), 1.0, sphere_material)
+    sphere = Sphere(np.array([2.5, 1.0, 4.0]), 1.0, sphere_material)
     reflecting_material = Material(Color.purple(0.1), Color.purple(0.7), Color.gray(0.0), 0.0, 0.6)
-    reflecting_sphere = Sphere(np.array([-2.0, 2.0, 5.0]), 2.0, reflecting_material)
-
+    reflecting_sphere = Sphere(np.array([-2.0, 2.0, 6.0]), 2.0, reflecting_material)
+    
+    scene.add_shape(box)
     scene.add_shape(sphere)
     scene.add_shape(reflecting_sphere)
 
@@ -57,7 +61,8 @@ def build_scene():
 def main():
     scene = build_scene()
     #image = Image(1920, 1080)
-    image = Image(1280, 720)
+    # image = Image(1280, 720)
+    image = Image(640, 360)
     camera = Camera(np.array([0.0, 5.0, -10.0]), np.array([0.0, 5.0, 2.0]), 
                     np.array([0.0, 1.0, 0.0]), 25 * math.pi / 180.0, image.width / image.height)
 

@@ -12,29 +12,7 @@ class Box(Shape):
         self.left_bottom_corner = np.array([-size_x / 2, -size_y / 2, -size_z / 2])
         self.right_up_corner = np.array([size_x / 2, size_y / 2, size_z / 2])
         super().__init__(box_material)
-
-    # def intersection(self, ray: Ray) -> Intersection:
-    #     translated_ray = self.translated_ray(ray)
-    #     m = 1.0 / ray.direction
-    #     n = m * translated_ray.origin
-    #     k = np.abs(m) * self.sizes
-    #     t1 = -n - k
-    #     t2 = -n + k
-    #     tN = t1.max()
-    #     tF = t2.min()
-    #     if (tN > tF or tF < RAY_MIN_DISTANCE):
-    #         return None
-        
-    #     self.cached_normal = self.step(np.repeat(tN, 3), t1) if tN > 0.0 else self.step(t2, np.repeat(tF, 3))
-    #     self.cached_normal *= np.sign(ray.direction)
-
-    #     if (tN > RAY_MIN_DISTANCE):
-    #         res = tN
-    #     else:
-    #         res = tF
-    #     self.cached_point = ray.ray_point(res)
-    #     return Intersection(ray, self, res)
-        
+    
     def intersection(self, ray: Ray) -> Intersection:
         local_ray = self.translated_ray(ray)
         tmin = (self.left_bottom_corner[0] - local_ray.origin[0]) / local_ray.direction[0]
@@ -91,18 +69,12 @@ class Box(Shape):
     def step(self, edge: np.ndarray, vec: np.ndarray):
         return (vec >= edge) * 1.0
 
-    # def normal_at_point(self, point: np.ndarray):
-    #     if self.check_cached(point):
-    #         return self.cached_normal
-
     def normal_at_point(self, point: np.ndarray):
         translated_point = point - self.center
         normal_dec = np.abs(translated_point) / self.sizes
         max_coordinate = np.max(normal_dec)
         
-        for i in range(3):
-            if abs(normal_dec[i]) < max_coordinate:
-                normal_dec[i] = 0.0
+        normal_dec = normal_dec * (np.abs(normal_dec) >= max_coordinate)
         
         normal = normal_dec * translated_point
         normal = normalize(normal)
